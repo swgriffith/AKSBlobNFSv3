@@ -73,7 +73,6 @@ parameters:
   resourceGroup: $RG
   storageAccount: $SA_NAME
   server: $SA_NAME.blob.core.windows.net
-  #containerName: test
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:

@@ -1,5 +1,5 @@
 # Setup Environment Variables
-RG=EphBlobNFSv3Lab2
+RG=EphBlobNFSv3Lab
 LOC=eastus
 CLUSTER_NAME=aksblob2
 SA_NAME=aksblobnfsgriff2
@@ -38,6 +38,17 @@ az storage account create  \
 --subnet $AKS_SUBNET_ID \
 --default-action deny
 
+# Add the current users public IP for container access
+az storage account network-rule add --resource-group $RG --account-name $SA_NAME --ip-address $(curl -4 icanhazip.com)
+
+# It may take a couple minutes for the firewall rule update to be active
+sleep 60
+
+# Create the storage container
+az storage container create \
+    --account-name $SA_NAME \
+    --name upload 
+
 # Create the AKS Cluster
 az aks create \
 --resource-group $RG \
@@ -73,45 +84,22 @@ parameters:
   resourceGroup: $RG
   storageAccount: $SA_NAME
   server: $SA_NAME.blob.core.windows.net
+  containerName: upload
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
 mountOptions:
   - nconnect=8
 EOF
 
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: blobnfs-pvc
-spec:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: blob-nfs
-  resources:
-    requests:
-      storage: 5Gi
-EOF
 
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: ubuntu
-  name: ubuntu
-spec:
-  containers:
-  - image: ubuntu
-    name: ubuntu
-    command: [ "/bin/bash", "-c", "--" ]
-    args: [ "while true; do sleep 30; done;" ]
-    volumeMounts:
-        - mountPath: /blobnfs
-          name: blobnfs
-  volumes:
-    - name: blobnfs
-      persistentVolumeClaim:
-        claimName: blobnfs-pvc
-  restartPolicy: Never
-EOF
+# Basic Ubuntu pod Demo
+kubectl apply -f basicpod/.
+
+# SFTP Demo
+kubectl apply -f sftp/.  
+
+# Get the service public IP
+kubectl get svc -n sftp
+
+# Connect to sftp
+sftp aksuser@<service public IP>

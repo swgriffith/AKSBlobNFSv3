@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sftp
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: blobnfs-pvc-sftp
+  namespace: sftp
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: blob-nfs
+  resources:
+    requests:
+      storage: 5Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sftp
+  namespace: sftp
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "ssh"
+    port: 22
+    targetPort: 22
+  selector:
+    app: sftp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sftp
+  name: sftp
+  namespace: sftp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sftp
+  template:
+    metadata:
+      labels:
+        app: sftp
+    spec:
+      initContainers:
+      - name: setup
+        image: busybox:latest
+        command: ["/bin/sh"]
+        # args: ['-c','useradd aksuser -p $(echo "reddog9876" | openssl passwd -1 -stdin);chown aksuser /home/aksuser;touch /etc/sftp/users.conf;echo "aksuser:reddog9876:::upload">/etc/sftp/users.conf']
+        args: ['-c','echo "aksuser:reddog9876:::upload">/etc/sftp/users.conf']
+        volumeMounts:
+        - name: sftpconfig
+          mountPath: /etc/sftp
+      containers:
+      - image: atmoz/sftp:latest
+        name: sftp
+        ports:
+        - containerPort: 22
+        volumeMounts:
+        - name: sftpconfig
+          mountPath: /etc/sftp
+        - name: blobnfs
+          mountPath: /home/aksuser/upload
+      volumes:
+      - name: sftpconfig
+        emptyDir: {}
+      - name: blobnfs
+        persistentVolumeClaim:
+          claimName: blobnfs-pvc-sftp

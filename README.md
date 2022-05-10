@@ -137,6 +137,7 @@ kubectl apply -f sftp/.
 kubectl get svc -n sftp
 
 # Connect to sftp
+# Password is 'reddog9876'
 sftp aksuser@<service public IP>
 ```
 

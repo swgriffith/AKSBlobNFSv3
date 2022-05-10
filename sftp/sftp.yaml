@@ -51,7 +51,6 @@ spec:
       - name: setup
         image: busybox:latest
         command: ["/bin/sh"]
-        # args: ['-c','useradd aksuser -p $(echo "reddog9876" | openssl passwd -1 -stdin);chown aksuser /home/aksuser;touch /etc/sftp/users.conf;echo "aksuser:reddog9876:::upload">/etc/sftp/users.conf']
         args: ['-c','echo "aksuser:reddog9876:::upload">/etc/sftp/users.conf']
         volumeMounts:
         - name: sftpconfig

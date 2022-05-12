@@ -141,4 +141,11 @@ kubectl get svc -n sftp
 sftp aksuser@<service public IP>
 ```
 
+Writing Random Data from Multiple Pods
+```bash
+kubectl apply -f dd-write/.
 
+# You can watch the file creation in the portal, or 
+# you can start the 'Basic Ubuntu' demo above, which
+# uses the same PVC and watch the /blobnfs directory
+```

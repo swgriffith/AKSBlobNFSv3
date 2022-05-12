@@ -141,7 +141,7 @@ kubectl get svc -n sftp
 sftp aksuser@<service public IP>
 ```
 
-Writing Random Data from Multiple Pods
+### Writing Random Data from Multiple Pods
 ```bash
 kubectl apply -f dd-write/.
 

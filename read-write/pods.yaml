@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: writer
+  name: writer
+spec:
+  containers:
+  - image: ubuntu
+    name: ubuntu
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do date \"+%D %T\">>/blobnfs/data.dat; sleep 5;done;"  ]
+    volumeMounts:
+        - mountPath: /blobnfs
+          name: blobnfs
+  volumes:
+    - name: blobnfs
+      persistentVolumeClaim:
+        claimName: blobnfs-pvc-read-write-demo
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: reader
+  name: reader
+spec:
+  containers:
+  - image: ubuntu
+    name: ubuntu
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "sleep 10; tail -f /blobnfs/data.dat" ]
+    volumeMounts:
+        - mountPath: /blobnfs
+          name: blobnfs
+  volumes:
+    - name: blobnfs
+      persistentVolumeClaim:
+        claimName: blobnfs-pvc-read-write-demo
+  restartPolicy: Never

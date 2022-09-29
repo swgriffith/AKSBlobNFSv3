@@ -36,8 +36,7 @@ az network vnet subnet update \
 --service-endpoints 'Microsoft.Storage'
 
 # Get the Vnet and Subnet IDs for later
-VNET_ID=$(az network vnet show -g $RG -n demovnet --query id -o tsv)
-AKS_SUBNET_ID=$VNET_ID/subnets/aks
+AKS_SUBNET_ID=$(az network vnet subnet show -g $RG --vnet-name demovnet -n aks -o tsv --query id)
 ```
 
 Create Storage Account with Blob NFS Enabled and enable the users public IP to access the account.
@@ -73,7 +72,7 @@ Create the AKS Cluster
 az aks create \
 --resource-group $RG \
 --name $CLUSTER_NAME \
---vnet-subnet-id $AKS_SUBNET_ID -y
+--vnet-subnet-id $AKS_SUBNET_ID
 ```
 
 Grant the cluster identity access to the resource groups.
@@ -148,4 +147,13 @@ kubectl apply -f dd-write/.
 # You can watch the file creation in the portal, or 
 # you can start the 'Basic Ubuntu' demo above, which
 # uses the same PVC and watch the /blobnfs directory
+```
+
+### Writing from one pod and reading from another
+```bash
+# Deploy the PVC and reader and writer pods
+kubectl apply -f read-write/.
+
+# Follow the reader pod logs
+kubectl logs -f reader
 ```

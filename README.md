@@ -280,6 +280,9 @@ kubectl delete pv pv-blob
 ```
 
 ### Writing from one pod and reading from another
+
+This example will install a persistent volume, persistent volume claim and two pods. One writer pod, which will write the current date/time every 5s to a file in the NFS share, and a reader pod which will tail that file to stdout.
+
 ```bash
 # Create the persistent volume
 cat <<EOF | kubectl apply -f -

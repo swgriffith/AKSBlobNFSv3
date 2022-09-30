@@ -26,4 +26,4 @@ bs=1M count=10000; sleep 20; done;" ]
       volumes:
         - name: blobnfs
           persistentVolumeClaim:
-            claimName: blobnfs-pvc-ubuntu-demo
+            claimName: pvc-blob

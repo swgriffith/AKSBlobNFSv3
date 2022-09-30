@@ -16,5 +16,5 @@ spec:
   volumes:
     - name: blobnfs
       persistentVolumeClaim:
-        claimName: blobnfs-pvc-ubuntu-demo
+        claimName: pvc-blob
   restartPolicy: Never

@@ -66,13 +66,22 @@ az storage container create \
     --name upload 
 ```
 
+Register the feature and provider
+
+```bash
+az extension add --name aks-preview
+az feature register --name EnableBlobCSIDriver --namespace Microsoft.ContainerService
+az provider register -n Microsoft.ContainerService
+```
+
 Create the AKS Cluster
 
 ```bash
 az aks create \
 --resource-group $RG \
 --name $CLUSTER_NAME \
---vnet-subnet-id $AKS_SUBNET_ID
+--vnet-subnet-id $AKS_SUBNET_ID \
+--enable-blob-driver
 ```
 
 Grant the cluster identity access to the resource groups.

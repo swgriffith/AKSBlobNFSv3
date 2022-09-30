@@ -16,7 +16,7 @@ spec:
   volumes:
     - name: blobnfs
       persistentVolumeClaim:
-        claimName: blobnfs-pvc-read-write-demo
+        claimName: pvc-blob
   restartPolicy: Never
 ---
 apiVersion: v1
@@ -37,5 +37,5 @@ spec:
   volumes:
     - name: blobnfs
       persistentVolumeClaim:
-        claimName: blobnfs-pvc-read-write-demo
+        claimName: pvc-blob
   restartPolicy: Never

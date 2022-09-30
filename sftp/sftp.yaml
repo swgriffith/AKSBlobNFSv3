@@ -1,26 +1,7 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: sftp
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: blobnfs-pvc-sftp
-  namespace: sftp
-spec:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: blob-nfs
-  resources:
-    requests:
-      storage: 5Gi
----
 kind: Service
 apiVersion: v1
 metadata:
   name: sftp
-  namespace: sftp
 spec:
   type: LoadBalancer
   ports:
@@ -36,7 +17,6 @@ metadata:
   labels:
     app: sftp
   name: sftp
-  namespace: sftp
 spec:
   replicas: 1
   selector:
@@ -70,4 +50,4 @@ spec:
         emptyDir: {}
       - name: blobnfs
         persistentVolumeClaim:
-          claimName: blobnfs-pvc-sftp
+          claimName: pvc-blob
